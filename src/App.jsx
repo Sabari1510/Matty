@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { observer } from 'mobx-react-lite';
 import { Spinner } from '@blueprintjs/core';
 
@@ -29,6 +30,12 @@ import ptBr from './translations/pt-br';
 import zhCh from './translations/zh-ch';
 
 import Topbar from './topbar/topbar';
+
+// Import new components
+import LandingPage from './components/LandingPage';
+import Login from './components/Login';
+import Signup from './components/Signup';
+import Dashboard from './components/Dashboard';
 
 // load default translations
 setTranslations(en);
@@ -88,7 +95,40 @@ const useHeight = () => {
   return height;
 };
 
-const App = observer(({ store }) => {
+// Protected Route Component
+const ProtectedRoute = ({ children }) => {
+  const token = localStorage.getItem('token');
+  return token ? children : <Navigate to="/login" replace />;
+};
+
+// Main App Component with Routing
+const AppWithRouting = ({ store }) => {
+  console.log('AppWithRouting rendered, store:', store);
+  
+  return (
+    <Router>
+      <Routes>
+        <Route path="/" element={<LandingPage />} />
+        <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<Signup />} />
+        <Route path="/dashboard" element={
+          <ProtectedRoute>
+            <Dashboard />
+          </ProtectedRoute>
+        } />
+        <Route path="/editor" element={
+          <ProtectedRoute>
+            <PolotnoEditor store={store} />
+          </ProtectedRoute>
+        } />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </Router>
+  );
+};
+
+// Original Polotno Editor Component
+const PolotnoEditor = observer(({ store }) => {
   const project = useProject();
   const height = useHeight();
 
@@ -180,4 +220,11 @@ const App = observer(({ store }) => {
   );
 });
 
+// Original App Component (for backward compatibility)
+const App = observer(({ store }) => {
+  console.log('Main App component rendered, store:', store);
+  return <AppWithRouting store={store} />;
+});
+
+// Export the main app with routing
 export default App;
