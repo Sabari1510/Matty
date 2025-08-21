@@ -71,37 +71,47 @@ export const FileMenu = observer(({ store, project }) => {
               }}
             />
 
-            {/* New: Save image to Cloudinary */}
-            <MenuItem
-              icon={<FloppyDisk />}
-              text="Save image to Cloudinary"
-              onClick={async () => {
-                try {
-                  const maxWidth = 1080;
-                  const pageWidth = store.activePage?.computedWidth || maxWidth;
-                  const canvas = store.pages.length
-                    ? await store._toCanvas({
-                        pixelRatio: maxWidth / pageWidth,
-                        pageId: store.activePage?.id,
-                        quickMode: true,
-                        _skipTimeout: true,
-                      })
-                    : document.createElement('canvas');
-                  const blob = await new Promise((resolve) =>
-                    canvas.toBlob(resolve, 'image/jpeg', 0.9)
-                  );
-                  const url = await api.uploadImageToCloudinary(blob);
-                  try {
-                    await navigator.clipboard.writeText(url);
-                    alert('Uploaded to Cloudinary. URL copied to clipboard.');
-                  } catch (e) {
-                    alert('Uploaded to Cloudinary: ' + url);
-                  }
-                } catch (e) {
-                  alert('Upload failed: ' + e.message);
-                }
-              }}
-            />
+            						{/* New: Save image to Cloudinary */}
+						<MenuItem
+							icon={<FloppyDisk />}
+							text="Save image to Cloudinary"
+							onClick={async () => {
+								try {
+									const maxWidth = 1080;
+									const pageWidth = store.activePage?.computedWidth || maxWidth;
+									const canvas = store.pages.length
+										? await store._toCanvas({
+											pixelRatio: maxWidth / pageWidth,
+											pageId: store.activePage?.id,
+											quickMode: true,
+											_skipTimeout: true,
+										})
+										: document.createElement('canvas');
+									const blob = await new Promise((resolve) =>
+										canvas.toBlob(resolve, 'image/jpeg', 0.9)
+									);
+									
+									// Check if Cloudinary is configured
+									const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+									const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+									
+									if (!cloudName || !uploadPreset || cloudName === 'your_cloud_name') {
+										alert('Cloudinary not configured. Please set up environment variables in Vercel dashboard.');
+										return;
+									}
+									
+									const url = await api.uploadImageToCloudinary(blob);
+									try {
+										await navigator.clipboard.writeText(url);
+										alert('Uploaded to Cloudinary. URL copied to clipboard.');
+									} catch (e) {
+										alert('Uploaded to Cloudinary: ' + url);
+									}
+								} catch (e) {
+									alert('Upload failed: ' + e.message);
+								}
+							}}
+						/>
 
             <MenuDivider />
             <MenuItem text="Language" icon={<Translate />}>
