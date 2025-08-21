@@ -18,7 +18,7 @@ const LandingPage = () => {
       <nav className="landing-nav">
         <div className="nav-container">
           <div className="nav-brand">
-            <span className="brand-text">DesignAI</span>
+            <span className="brand-text">Matty</span>
           </div>
           <div className="nav-buttons">
             <button 
@@ -82,7 +82,7 @@ const LandingPage = () => {
         <div className="section-container">
           <div className="section-header">
             <h2 className="section-title">
-              Why Choose DesignAI?
+              Why Choose Matty?
             </h2>
             <p className="section-subtitle">
               Experience the future of design with our cutting-edge features
@@ -148,7 +148,7 @@ const LandingPage = () => {
               Ready to Create Something Amazing?
             </h2>
             <p className="cta-subtitle">
-              Join thousands of designers who trust DesignAI for their creative projects. Start your journey today.
+              Join thousands of designers who trust Matty for their creative projects. Start your journey today.
             </p>
             <button 
               onClick={() => navigate('/signup')}
@@ -163,9 +163,9 @@ const LandingPage = () => {
       {/* Footer */}
       <footer className="landing-footer">
         <div className="footer-container">
-          <span className="footer-brand">DesignAI</span>
+          <span className="footer-brand">Matty</span>
           <p className="footer-copyright">
-            © 2024 DesignAI. All rights reserved.
+            © 2024 Matty. All rights reserved.
           </p>
           <div className="footer-links">
             <a href="#" className="footer-link">Privacy Policy</a>

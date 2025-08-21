@@ -148,9 +148,9 @@ const Dashboard = () => {
         <div className="header-container">
           <div className="header-left">
             <div className="logo-container">
-              <span className="logo-text">DA</span>
+              <span className="logo-text">M</span>
             </div>
-            <span className="brand-text">DesignAI</span>
+            <span className="brand-text">Matty</span>
           </div>
           
           <div className="header-right">

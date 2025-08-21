@@ -9,7 +9,15 @@ require('dotenv').config({ path: './config.env' });
 const app = express();
 
 // Middleware
-app.use(cors());
+// Allow requests from your Vercel frontend
+const allowedOrigins = [
+  'https://your-frontend.vercel.app', // TODO: Replace with your actual Vercel URL
+];
+
+app.use(cors({
+  origin: allowedOrigins,
+  credentials: true, // if you use cookies or authentication
+}));
 app.use(express.json());
 
 // MongoDB Connection
