@@ -21,6 +21,7 @@ import {
 } from '@blueprintjs/icons';
 import { downloadFile } from 'polotno/utils/download';
 import { svgToJson } from 'polotno/utils/from-svg';
+import * as api from '../api';
 
 export const FileMenu = observer(({ store, project }) => {
   const inputRef = React.useRef();
@@ -67,6 +68,38 @@ export const FileMenu = observer(({ store, project }) => {
                   );
 
                 downloadFile(url, 'polotno.json');
+              }}
+            />
+
+            {/* New: Save image to Cloudinary */}
+            <MenuItem
+              icon={<FloppyDisk />}
+              text="Save image to Cloudinary"
+              onClick={async () => {
+                try {
+                  const maxWidth = 1080;
+                  const pageWidth = store.activePage?.computedWidth || maxWidth;
+                  const canvas = store.pages.length
+                    ? await store._toCanvas({
+                        pixelRatio: maxWidth / pageWidth,
+                        pageId: store.activePage?.id,
+                        quickMode: true,
+                        _skipTimeout: true,
+                      })
+                    : document.createElement('canvas');
+                  const blob = await new Promise((resolve) =>
+                    canvas.toBlob(resolve, 'image/jpeg', 0.9)
+                  );
+                  const url = await api.uploadImageToCloudinary(blob);
+                  try {
+                    await navigator.clipboard.writeText(url);
+                    alert('Uploaded to Cloudinary. URL copied to clipboard.');
+                  } catch (e) {
+                    alert('Uploaded to Cloudinary: ' + url);
+                  }
+                } catch (e) {
+                  alert('Upload failed: ' + e.message);
+                }
               }}
             />
 

@@ -26,11 +26,18 @@ const Dashboard = () => {
         if (userData) setUser(JSON.parse(userData));
 
         // Fetch recent designs for the logged-in user
-        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/designs/recent`, {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        const data = await res.json();
-        setRecentDesigns(data.designs || []);
+        if (token) {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/designs/recent`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setRecentDesigns(data.designs || []);
+            console.log('Recent designs loaded:', data.designs);
+          } else {
+            console.error('Failed to fetch recent designs:', res.status);
+          }
+        }
         // Optionally, set stats based on data
       } catch (error) {
         console.error('Error loading dashboard data:', error);
@@ -39,6 +46,28 @@ const Dashboard = () => {
       }
     };
     loadDashboardData();
+  }, []);
+
+  // Refresh dashboard when user logs in
+  useEffect(() => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      const loadDashboardData = async () => {
+        try {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/api/designs/recent`, {
+            headers: { Authorization: `Bearer ${token}` }
+          });
+          if (res.ok) {
+            const data = await res.json();
+            setRecentDesigns(data.designs || []);
+            console.log('Recent designs refreshed:', data.designs);
+          }
+        } catch (error) {
+          console.error('Error refreshing dashboard data:', error);
+        }
+      };
+      loadDashboardData();
+    }
   }, []);
 
   const handleCreateNew = () => {
@@ -53,6 +82,24 @@ const Dashboard = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('userData');
     navigate('/');
+  };
+
+  const refreshRecentDesigns = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      if (token) {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/designs/recent`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setRecentDesigns(data.designs || []);
+          console.log('Recent designs refreshed:', data.designs);
+        }
+      }
+    } catch (error) {
+      console.error('Error refreshing recent designs:', error);
+    }
   };
 
   const getStoragePercentage = () => {
@@ -215,15 +262,26 @@ const Dashboard = () => {
         <div className="designs-section">
           <div className="section-header">
             <h2 className="section-title">Recent Designs</h2>
-            <button 
-              onClick={handleCreateNew}
-              className="btn-create-secondary"
-            >
-              <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-              </svg>
-              <span>Create New</span>
-            </button>
+            <div className="section-actions">
+              <button 
+                onClick={refreshRecentDesigns}
+                className="btn-refresh"
+                title="Refresh recent designs"
+              >
+                <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                </svg>
+              </button>
+              <button 
+                onClick={handleCreateNew}
+                className="btn-create-secondary"
+              >
+                <svg className="btn-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                </svg>
+                <span>Create New</span>
+              </button>
+            </div>
           </div>
 
           <div className="designs-grid">

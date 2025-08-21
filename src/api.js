@@ -269,3 +269,37 @@ export const deleteAsset = async ({ id }) => {
   const newList = list.filter((asset) => asset.id !== id);
   await writeKv('assets-list', newList);
 };
+
+export async function uploadImageToCloudinary(file) {
+  const cloudName = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  if (!cloudName || !uploadPreset) {
+    console.error('Cloudinary config missing:', { cloudName, uploadPreset });
+    throw new Error('Missing Cloudinary configuration. Please check your .env file.');
+  }
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', uploadPreset);
+
+  try {
+    const res = await fetch(`https://api.cloudinary.com/v1_1/${cloudName}/image/upload`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!res.ok) {
+      const text = await res.text();
+      console.error('Cloudinary upload failed:', res.status, text);
+      throw new Error(`Cloudinary upload failed: ${res.status} - ${text}`);
+    }
+
+    const data = await res.json();
+    console.log('Cloudinary upload successful:', data.secure_url);
+    return data.secure_url || data.url;
+  } catch (error) {
+    console.error('Cloudinary upload error:', error);
+    throw error;
+  }
+}

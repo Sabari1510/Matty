@@ -139,18 +139,25 @@ class Project {
         id: this.id,
         name: this.name,
       });
-      // Convert blob to data URL for dashboard preview
-      const thumbnailDataUrl = await new Promise((resolve) => {
-        const reader = new window.FileReader();
-        reader.onloadend = () => resolve(reader.result);
-        reader.readAsDataURL(blob);
-      });
+      // Try Cloudinary upload first if configured
+      let thumbnailUrl = '';
+      try {
+        thumbnailUrl = await api.uploadImageToCloudinary(blob);
+      } catch (e) {
+        // Fallback to data URL if Cloudinary not configured
+        const dataUrl = await new Promise((resolve) => {
+          const reader = new window.FileReader();
+          reader.onloadend = () => resolve(reader.result);
+          reader.readAsDataURL(blob);
+        });
+        thumbnailUrl = dataUrl;
+      }
       // Save to backend for dashboard
       await api.saveDesignToBackend({
         name: this.name,
         lastModified: new Date(),
         type: 'custom',
-        thumbnail: thumbnailDataUrl,
+        thumbnail: thumbnailUrl,
         size: '',
       });
       if (res.status === 'saved') {
