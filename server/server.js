@@ -11,7 +11,7 @@ const app = express();
 // Middleware
 // Allow requests from your Vercel frontend
 const allowedOrigins = [
-  'https://your-frontend.vercel.app', // TODO: Replace with your actual Vercel URL
+  'https://matty-liart.vercel.app'
 ];
 
 app.use(cors({
