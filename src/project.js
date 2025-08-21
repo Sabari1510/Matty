@@ -139,6 +139,20 @@ class Project {
         id: this.id,
         name: this.name,
       });
+      // Convert blob to data URL for dashboard preview
+      const thumbnailDataUrl = await new Promise((resolve) => {
+        const reader = new window.FileReader();
+        reader.onloadend = () => resolve(reader.result);
+        reader.readAsDataURL(blob);
+      });
+      // Save to backend for dashboard
+      await api.saveDesignToBackend({
+        name: this.name,
+        lastModified: new Date(),
+        type: 'custom',
+        thumbnail: thumbnailDataUrl,
+        size: '',
+      });
       if (res.status === 'saved') {
         this.id = res.id;
         await storage.setItem('polotno-last-design-id', res.id);

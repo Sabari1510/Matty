@@ -11,6 +11,7 @@ const app = express();
 // Middleware
 // Allow requests from your Vercel frontend
 const allowedOrigins = [
+  'http://localhost:5173',
   'https://matty-liart.vercel.app'
 ];
 
@@ -34,6 +35,17 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model('User', userSchema);
+
+// Design Schema and Model
+const designSchema = new mongoose.Schema({
+  user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
+  name: String,
+  lastModified: { type: Date, default: Date.now },
+  type: String,
+  thumbnail: String,
+  size: String,
+});
+const Design = mongoose.model('Design', designSchema);
 
 // Authentication Middleware
 const auth = async (req, res, next) => {
@@ -160,6 +172,37 @@ app.get('/api/auth/profile', auth, async (req, res) => {
     });
   } catch (error) {
     console.error('Profile error:', error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Endpoint to get recent designs for the logged-in user
+app.get('/api/designs/recent', auth, async (req, res) => {
+  try {
+    const designs = await Design.find({ user: req.user._id })
+      .sort({ lastModified: -1 })
+      .limit(6);
+    res.json({ designs });
+  } catch (error) {
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// Endpoint to save a design for the logged-in user
+app.post('/api/designs', auth, async (req, res) => {
+  try {
+    const { name, lastModified, type, thumbnail, size } = req.body;
+    const design = new Design({
+      user: req.user._id,
+      name,
+      lastModified,
+      type,
+      thumbnail,
+      size,
+    });
+    await design.save();
+    res.status(201).json({ message: 'Design saved', design });
+  } catch (error) {
     res.status(500).json({ message: 'Server error' });
   }
 });

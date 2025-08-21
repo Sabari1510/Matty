@@ -104,31 +104,13 @@ export default observer(({ store }) => {
         <Navbar.Group align={Alignment.RIGHT}>
           {/* <Status project={project} /> */}
 
-          <AnchorButton href="https://polotno.com" target="_blank" minimal>
-            For developers
-          </AnchorButton>
-          {/* 
-          <AnchorButton
-            minimal
-            href="https://github.com/lavrton/polotno-studio"
-            target="_blank"
-            icon={
-              <FaGithub className="bp5-icon" style={{ fontSize: '20px' }} />
-            }
-          ></AnchorButton>
-          <AnchorButton
-            minimal
-            href="https://twitter.com/lavrton"
-            target="_blank"
-            icon={
-              <FaTwitter className="bp5-icon" style={{ fontSize: '20px' }} />
-            }
-          ></AnchorButton> */}
+         
+        
           <NavbarDivider />
           <PostProcessButton store={store} />
           <DownloadButton store={store} />
           <UserMenu store={store} project={project} />
-          {/* <NavbarHeading>Polotno Studio</NavbarHeading> */}
+         
         </Navbar.Group>
       </NavInner>
     </NavbarContainer>

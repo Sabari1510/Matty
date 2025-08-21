@@ -179,7 +179,7 @@ const PolotnoEditor = observer(({ store }) => {
     >
       <Topbar store={store} />
       <div style={{ height: 'calc(100% - 50px)' }}>
-        <PolotnoContainer className="polotno-app-container">
+        <PolotnoContainer className="polotno-app-container" showCredit={false}>
           <SidePanelWrap>
             <SidePanel store={store} sections={DEFAULT_SECTIONS} />
           </SidePanelWrap>

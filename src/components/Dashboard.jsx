@@ -19,82 +19,25 @@ const Dashboard = () => {
   // Load dashboard data
   useEffect(() => {
     const loadDashboardData = async () => {
+      setLoading(true);
       try {
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        
-        setRecentDesigns([
-          { 
-            id: 1, 
-            name: 'Modern Logo Design', 
-            lastModified: '2 hours ago', 
-            type: 'logo',
-            thumbnail: 'https://via.placeholder.com/300x200/667eea/ffffff?text=Logo',
-            size: '2.4 MB'
-          },
-          { 
-            id: 2, 
-            name: 'Social Media Banner', 
-            lastModified: '1 day ago', 
-            type: 'banner',
-            thumbnail: 'https://via.placeholder.com/300x200/764ba2/ffffff?text=Banner',
-            size: '1.8 MB'
-          },
-          { 
-            id: 3, 
-            name: 'Business Card Template', 
-            lastModified: '3 days ago', 
-            type: 'card',
-            thumbnail: 'https://via.placeholder.com/300x200/f093fb/ffffff?text=Card',
-            size: '3.2 MB'
-          },
-          { 
-            id: 4, 
-            name: 'Website Hero Section', 
-            lastModified: '1 week ago', 
-            type: 'web',
-            thumbnail: 'https://via.placeholder.com/300x200/4facfe/ffffff?text=Hero',
-            size: '4.1 MB'
-          },
-          { 
-            id: 5, 
-            name: 'Product Mockup', 
-            lastModified: '2 weeks ago', 
-            type: 'mockup',
-            thumbnail: 'https://via.placeholder.com/300x200/43e97b/ffffff?text=Mockup',
-            size: '5.6 MB'
-          },
-          { 
-            id: 6, 
-            name: 'Instagram Post', 
-            lastModified: '3 weeks ago', 
-            type: 'social',
-            thumbnail: 'https://via.placeholder.com/300x200/fa709a/ffffff?text=Post',
-            size: '2.1 MB'
-          }
-        ]);
+        const token = localStorage.getItem('token');
+        const userData = localStorage.getItem('user');
+        if (userData) setUser(JSON.parse(userData));
 
-        setStats({
-          totalDesigns: 42,
-          thisMonth: 12,
-          shared: 8,
-          favorites: 15,
-          storageUsed: 67,
-          storageLimit: 100
+        // Fetch recent designs for the logged-in user
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/api/designs/recent`, {
+          headers: { Authorization: `Bearer ${token}` }
         });
-
-        // Get user data from localStorage or API
-        const userData = localStorage.getItem('userData');
-        if (userData) {
-          setUser(JSON.parse(userData));
-        }
+        const data = await res.json();
+        setRecentDesigns(data.designs || []);
+        // Optionally, set stats based on data
       } catch (error) {
         console.error('Error loading dashboard data:', error);
       } finally {
         setLoading(false);
       }
     };
-
     loadDashboardData();
   }, []);
 

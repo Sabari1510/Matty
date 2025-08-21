@@ -151,6 +151,19 @@ export async function saveDesign({ storeJSON, preview, name, id }) {
   return { id, status: 'saved' };
 }
 
+export async function saveDesignToBackend(design) {
+  const token = localStorage.getItem('token');
+  const res = await fetch(`${import.meta.env.VITE_API_URL}/api/designs`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify(design),
+  });
+  return res.json();
+}
+
 export const getPreview = async ({ id }) => {
   const preview = await readFile(`designs/${id}.jpg`);
   return URL.createObjectURL(preview);
