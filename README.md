@@ -81,9 +81,8 @@ Matty/
 - Build frontend: `npm run build`
 - Serve static files or deploy to Vercel/Netlify for frontend, and Render/Heroku for backend.
 
-## License
-MIT
+
 
 ---
 
-**Made with ❤️ by Sabari1510 and team.**
+**Made with ❤️ by Sabari1510 and team
